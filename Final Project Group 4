@@ -1,0 +1,114 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <limits> // Include for std::numeric_limits
+
+// Contractor class
+class Contractor {
+private:
+    std::string name;
+    int contractorNumber;
+    std::string startDate;
+
+public:
+    // Constructor to initialize a contractor
+    Contractor(std::string n, int cNum, std::string sDate)
+        : name(n), contractorNumber(cNum), startDate(sDate) {}
+
+    // Accessor functions
+    std::string getName() const { return name; }
+    int getContractorNumber() const { return contractorNumber; }
+    std::string getStartDate() const { return startDate; }
+
+    // Mutator functions
+    void setName(const std::string &n) { name = n; }
+    void setContractorNumber(int cNum) { contractorNumber = cNum; }
+    void setStartDate(const std::string &sDate) { startDate = sDate; }
+};
+
+// Subcontractor class derived from Contractor
+class Subcontractor : public Contractor {
+private:
+    int shift;          // 1 for day shift, 2 for night shift
+    double hourlyRate;  // Hourly pay rate
+
+public:
+    // Constructor to initialize a subcontractor
+    Subcontractor(std::string n, int cNum, std::string sDate, int s, double hRate)
+        : Contractor(n, cNum, sDate), shift(s), hourlyRate(hRate) {}
+
+    // Accessor functions
+    int getShift() const { return shift; }
+    double getHourlyRate() const { return hourlyRate; }
+
+    // Mutator functions
+    void setShift(int s) { shift = s; }
+    void setHourlyRate(double hRate) { hourlyRate = hRate; }
+
+    // Method to calculate pay
+    double calculatePay(int hoursWorked) const {
+        double pay = hourlyRate * hoursWorked;
+        if (shift == 2) {
+            // Apply 3% shift differential for night shift
+            pay += pay * 0.03;
+        }
+        return pay;
+    }
+};
+
+// Main program to demonstrate the use of the classes
+int main() {
+    std::vector<Subcontractor> subcontractors;
+    int numSubcontractors;
+
+    std::cout << "Enter the number of subcontractors: ";
+    std::cin >> numSubcontractors;
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ensure no leftover characters
+
+    // Input details for each subcontractor
+    for (int i = 0; i < numSubcontractors; ++i) {
+        std::string name, startDate;
+        int contractorNumber, shift, hoursWorked;
+        double hourlyRate;
+
+        std::cout << "Enter subcontractor " << i + 1 << " details:" << std::endl;
+
+        std::cout << "Name: ";
+        std::getline(std::cin, name);
+
+        std::cout << "Contractor number: ";
+        std::cin >> contractorNumber;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        std::cout << "Start date (format YYYY-MM-DD): ";
+        std::getline(std::cin, startDate);
+
+        std::cout << "Shift (1 for Day, 2 for Night): ";
+        std::cin >> shift;
+
+        std::cout << "Hourly pay rate: $";
+        std::cin >> hourlyRate;
+
+        std::cout << "Hours worked: ";
+        std::cin >> hoursWorked;
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+        // Create a subcontractor object
+        Subcontractor sub(name, contractorNumber, startDate, shift, hourlyRate);
+        subcontractors.push_back(sub);
+
+        // Calculate and display the pay
+        double pay = sub.calculatePay(hoursWorked);
+        std::cout << "Pay for " << name << " is: $" << pay << std::endl;
+    }
+
+    // Optionally, list all subcontractors' information
+    std::cout << "\nAll subcontractors information:\n";
+    for (const auto &sub : subcontractors) {
+        std::cout << "Name: " << sub.getName() << ", Contractor Number: " << sub.getContractorNumber()
+                  << ", Start Date: " << sub.getStartDate() << ", Shift: "
+                  << (sub.getShift() == 1 ? "Day" : "Night") << ", Hourly Rate: $" << sub.getHourlyRate() << std::endl;
+    }
+
+    return 0;
+}
